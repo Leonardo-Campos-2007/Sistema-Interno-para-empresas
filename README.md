@@ -605,4 +605,6 @@ O desenvolvimento seguirá:
 
 # Licença
 
-A licença do projeto ainda não foi definida.
+Mozilla Public License Version 2.0
+
+
