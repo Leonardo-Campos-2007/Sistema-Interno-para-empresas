@@ -135,10 +135,7 @@ Não devemos transformar os testes unitários em testes do comportamento do pró
 
 Exemplo inadequado:
 
-```java
-when(repository.findById(id)).thenReturn(...)
-verify(repository).save(...)
-```
+
 
 sem testar nenhuma regra relevante.
 
@@ -1256,9 +1253,7 @@ Para testes de integração, o ambiente deverá iniciar automaticamente os conta
 
 Antes de criar um commit:
 
-```bash
-mvn test
-```
+
 
 Deve concluir sem falhas.
 
