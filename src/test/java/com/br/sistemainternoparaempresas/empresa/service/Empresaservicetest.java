@@ -56,6 +56,7 @@ class EmpresaServiceTest {
                 "contato@empresa.com"
         );
 
+        when(empresaRepository.findFirstByOrderByDataCriacaoAsc()).thenReturn(Optional.empty());
         when(empresaRepository.findByCnpj(request.getCnpj())).thenReturn(Optional.empty());
 
         Empresa empresaEsperada = new Empresa(
@@ -95,6 +96,7 @@ class EmpresaServiceTest {
                 "antigo@empresa.com"
         );
 
+        when(empresaRepository.findFirstByOrderByDataCriacaoAsc()).thenReturn(Optional.empty());
         when(empresaRepository.findByCnpj(request.getCnpj()))
                 .thenReturn(Optional.of(empresaExistente));
 
@@ -106,6 +108,37 @@ class EmpresaServiceTest {
 
         assertEquals("CNPJ_JA_CADASTRADO", exception.getCode());
         assertTrue(exception.getMessage().contains("CNPJ"));
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar cadastro de segunda empresa na mesma instalação")
+    void testCriarSegundaEmpresa() {
+        Empresa empresaExistente = new Empresa(
+                "Empresa Existente Ltda", "Empresa Existente", "12345678000190", "existente@empresa.com"
+        );
+        when(empresaRepository.findFirstByOrderByDataCriacaoAsc()).thenReturn(Optional.of(empresaExistente));
+
+        BusinessRuleException exception = assertThrows(
+                BusinessRuleException.class,
+                () -> empresaService.criar(new EmpresaCreateRequest(
+                        "Nova Empresa Ltda", "Nova Empresa", "98765432000190", "nova@empresa.com"
+                ))
+        );
+
+        assertEquals("EMPRESA_JA_CADASTRADA", exception.getCode());
+    }
+
+    @Test
+    @DisplayName("Deve consultar a empresa principal da instalação")
+    void testObterEmpresaPrincipal() {
+        Empresa empresaEsperada = new Empresa(
+                "Empresa Teste Ltda", "Empresa Teste", "12345678000190", "contato@empresa.com"
+        );
+        when(empresaRepository.findFirstByOrderByDataCriacaoAsc()).thenReturn(Optional.of(empresaEsperada));
+
+        Empresa empresa = empresaService.obterEmpresaPrincipal();
+
+        assertEquals(empresaEsperada, empresa);
     }
 
     @Test

@@ -77,12 +77,7 @@ public class EmpresaController {
      */
     @GetMapping
     public ResponseEntity<EmpresaResponse> consultar() {
-        // Nota: Na Phase 1, existe uma única empresa por instalação
-        // ID padrão seria definido por configuração ou primeira instalação
-        // Aqui usamos um placeholder que será ajustado após bootstrap
-        String empresaId = "default"; // TODO: Implementar bootstrap
-
-        Empresa empresa = empresaService.obterPorId(empresaId);
+        Empresa empresa = empresaService.obterEmpresaPrincipal();
         return ResponseEntity.ok(new EmpresaResponse(empresa));
     }
 
@@ -99,9 +94,8 @@ public class EmpresaController {
      */
     @PutMapping
     public ResponseEntity<EmpresaResponse> atualizar(@Valid @RequestBody EmpresaUpdateRequest request) {
-        String empresaId = "default"; // TODO: Implementar bootstrap
-
-        Empresa empresa = empresaService.atualizar(empresaId, request);
+        Empresa empresaPrincipal = empresaService.obterEmpresaPrincipal();
+        Empresa empresa = empresaService.atualizar(empresaPrincipal.getId(), request);
         return ResponseEntity.ok(new EmpresaResponse(empresa));
     }
 
@@ -118,9 +112,8 @@ public class EmpresaController {
      */
     @PatchMapping("/status")
     public ResponseEntity<EmpresaResponse> alterarStatus(@RequestParam boolean ativa) {
-        String empresaId = "default"; // TODO: Implementar bootstrap
-
-        Empresa empresa = empresaService.alterarStatus(empresaId, ativa);
+        Empresa empresaPrincipal = empresaService.obterEmpresaPrincipal();
+        Empresa empresa = empresaService.alterarStatus(empresaPrincipal.getId(), ativa);
         return ResponseEntity.ok(new EmpresaResponse(empresa));
     }
 }

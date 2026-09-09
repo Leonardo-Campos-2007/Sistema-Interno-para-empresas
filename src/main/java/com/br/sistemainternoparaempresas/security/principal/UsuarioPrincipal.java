@@ -16,12 +16,14 @@ public class UsuarioPrincipal implements UserDetails {
     private final String email;
     private final String senhaHash;
     private final boolean ativo;
+    private final long tokenVersion;
 
     public UsuarioPrincipal(Usuario usuario) {
         this.id = usuario.getId();
         this.email = usuario.getEmail();
         this.senhaHash = usuario.getSenhaHash();
         this.ativo = usuario.isAtivo();
+        this.tokenVersion = usuario.getTokenVersion();
     }
 
     public String getId() {
@@ -46,6 +48,10 @@ public class UsuarioPrincipal implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public long getTokenVersion() {
+        return tokenVersion;
     }
 
     @Override

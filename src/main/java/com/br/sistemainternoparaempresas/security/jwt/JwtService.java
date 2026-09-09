@@ -28,9 +28,10 @@ public class JwtService {
     @Value("${app.security.jwt.expiration-ms:86400000}")
     private long expirationMs;
 
-    public String generateToken(String userId, String email) {
+    public String generateToken(String userId, String email, long tokenVersion) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("email", email);
+        claims.put("tokenVersion", tokenVersion);
         return createToken(claims, userId);
     }
 
@@ -59,6 +60,10 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public Long extractTokenVersion(String token) {
+        return extractClaim(token, claims -> claims.get("tokenVersion", Long.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -77,9 +82,13 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public boolean isTokenValid(String token, String userId) {
+    public boolean isTokenValid(String token, String userId, long tokenVersion) {
         final String extractedUserId = extractUserId(token);
-        return extractedUserId.equals(userId) && !isTokenExpired(token);
+        final Long extractedTokenVersion = extractTokenVersion(token);
+        return extractedUserId.equals(userId)
+                && extractedTokenVersion != null
+                && extractedTokenVersion == tokenVersion
+                && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

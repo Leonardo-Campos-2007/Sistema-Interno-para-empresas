@@ -38,6 +38,9 @@ public class Usuario {
     @Column(name = "senha_hash", nullable = false, length = 255)
     private String senhaHash;
 
+    @Column(name = "token_version", nullable = false)
+    private long tokenVersion = 0;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusUsuario status = StatusUsuario.ATIVO;
@@ -84,6 +87,14 @@ public class Usuario {
         this.ultimoLogin = LocalDateTime.now();
     }
 
+    public void alterarSenhaHash(String senhaHash) {
+        this.senhaHash = senhaHash;
+    }
+
+    public void invalidarTokensAtuais() {
+        this.tokenVersion++;
+    }
+
     public void bloquear() {
         this.status = StatusUsuario.BLOQUEADO;
     }
@@ -127,6 +138,10 @@ public class Usuario {
 
     public void setSenhaHash(String senhaHash) {
         this.senhaHash = senhaHash;
+    }
+
+    public long getTokenVersion() {
+        return tokenVersion;
     }
 
     public StatusUsuario getStatus() {

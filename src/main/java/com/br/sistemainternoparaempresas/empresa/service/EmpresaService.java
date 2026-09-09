@@ -44,6 +44,13 @@ public class EmpresaService {
     @Transactional
     public Empresa criar(EmpresaCreateRequest request) {
 
+        if (empresaRepository.findFirstByOrderByDataCriacaoAsc().isPresent()) {
+            throw new BusinessRuleException(
+                    "EMPRESA_JA_CADASTRADA",
+                    "A instalação já possui uma empresa cadastrada"
+            );
+        }
+
         // Valida CNPJ único
         Optional<Empresa> empresaExistente = empresaRepository.findByCnpj(request.getCnpj());
         if (empresaExistente.isPresent()) {
@@ -75,6 +82,15 @@ public class EmpresaService {
     public Empresa obterPorId(String id) {
         return empresaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Empresa", id));
+    }
+
+    /**
+     * Retorna a empresa única configurada na instalação atual.
+     */
+    @Transactional(readOnly = true)
+    public Empresa obterEmpresaPrincipal() {
+        return empresaRepository.findFirstByOrderByDataCriacaoAsc()
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa", "principal"));
     }
 
     /**

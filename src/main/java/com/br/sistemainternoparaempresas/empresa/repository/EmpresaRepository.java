@@ -24,4 +24,9 @@ public interface EmpresaRepository extends JpaRepository<Empresa, String> {
      * RN-009: Unicidade do CNPJ
      */
     Optional<Empresa> findByCnpj(String cnpj);
+
+    /**
+     * Retorna a empresa única da instalação na Fase 1.
+     */
+    Optional<Empresa> findFirstByOrderByDataCriacaoAsc();
 }
